@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opspilot-backend-config
+data:
+  MONGO_HOST: "opspilot-mongo.opspilot.svc.cluster.local"
+  MONGO_PORT: "27017"
+  MONGO_DATABASE: "opspilot"
+  APP_ENV: "development"

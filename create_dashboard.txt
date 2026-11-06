@@ -1,0 +1,58 @@
+Install prerequisites
+brew install kind kubectl kubectx helm
+ Copy command
+
+
+[ ] Create cluster
+kind create cluster --name dev-cluster
+ Copy command
+
+
+[ ] Select cluster
+kubectx kind-dev-cluster
+ Copy command
+
+
+[ ] Add Helm repository
+helm repo add kubernetes-dashboard https://kubernetes-retired.github.io/dashboard
+ Copy command
+
+
+[ ] Update Helm repository
+helm repo update
+ Copy command
+
+
+[ ] Install Dashboard
+helm upgrade --install kubernetes-dashboard kubernetes-dashboard/kubernetes-dashboard --create-namespace --namespace kubernetes-dashboard
+ Copy command
+
+
+[ ] Check resources
+kubectl get pods,svc -n kubernetes-dashboard
+ Copy command
+
+
+[ ] Create ServiceAccount
+kubectl create serviceaccount dashboard-user -n kubernetes-dashboard
+ Copy command
+
+
+[ ] Grant cluster-admin
+kubectl create clusterrolebinding dashboard-user-binding --clusterrole=cluster-admin --serviceaccount=kubernetes-dashboard:dashboard-user
+ Copy command
+
+
+[ ] Generate token
+kubectl create token dashboard-user -n kubernetes-dashboard
+ Copy command
+
+
+[ ] Start port-forward
+kubectl -n kubernetes-dashboard port-forward svc/kubernetes-dashboard-kong-proxy 8443:443
+ Copy command
+
+
+[ ] Open in Chrome
+https://localhost:8443
+ Copy command

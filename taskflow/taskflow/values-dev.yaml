@@ -1,0 +1,9 @@
+frontend:
+  replicaCount: 1
+
+backend:
+  replicaCount: 1
+
+postgres:
+  storage:
+    size: 2Gi

@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-selector
+spec:
+  nodeSelector:
+    workload: general
+  containers:
+    - name: nginx
+      image: nginx:stable

@@ -1,0 +1,41 @@
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mongodb-backup-job
+  namespace: k8s-backup-practice
+spec:
+  backoffLimit: 2
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      containers:
+        - name: backup
+          image: mongo:8
+          command:
+            - sh
+            - -c
+            - |
+              set -e
+
+              BACKUP_FILE="/backup/backup-$(date +%Y%m%d-%H%M%S).archive.gz"
+
+              echo "Starting backup..."
+
+              mongodump \
+                --host=practice-mongo.k8s-backup-practice.svc.cluster.local \
+                --port=27017 \
+                --db=backup_demo \
+                --gzip \
+                --archive="$BACKUP_FILE"
+
+              echo "Backup completed!"
+              ls -lh /backup
+          volumeMounts:
+            - name: backup-storage
+              mountPath: /backup
+      volumes:
+        - name: backup-storage
+          persistentVolumeClaim:
+            claimName: backup-pvc
+      restartPolicy: Never

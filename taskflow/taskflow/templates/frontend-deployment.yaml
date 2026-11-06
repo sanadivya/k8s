@@ -1,0 +1,45 @@
+
+apiVersion: apps/v1
+kind: Deployment
+
+metadata:
+  name: taskflow-frontend
+
+spec:
+  replicas: {{ .Values.frontend.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: taskflow-frontend
+
+  template:
+    metadata:
+      labels:
+        app: taskflow-frontend
+
+    spec:
+      containers:
+        - name: frontend
+
+          image: "{{ .Values.frontend.image.repository }}:{{ .Values.frontend.image.tag }}"
+
+          imagePullPolicy: {{ .Values.frontend.image.pullPolicy }}
+
+          ports:
+            - containerPort: {{ .Values.frontend.service.targetPort }}
+
+          resources:
+            {{- toYaml .Values.frontend.resources | nindent 12 }}
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 5
+
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 10

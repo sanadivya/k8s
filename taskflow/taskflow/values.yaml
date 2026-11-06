@@ -1,0 +1,57 @@
+
+frontend:
+  replicaCount: 1
+
+  image:
+    repository: taskflow-frontend
+    tag: "1.0"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 80
+
+  resources:
+    requests:
+      cpu: 100m
+      memory: 64Mi
+    limits:
+      cpu: 500m
+      memory: 256Mi
+
+backend:
+  replicaCount: 3
+
+  image:
+    repository: taskflow-backend
+    tag: "1.0"
+    pullPolicy: IfNotPresent
+
+  service:
+    type: ClusterIP
+    port: 5000
+    targetPort: 5000
+
+  env:
+    DB_HOST: taskflow-postgres
+    DB_NAME: taskflow
+    DB_USER: taskflow
+    DB_PASSWORD: taskflow123
+    DB_PORT: "5432"
+
+postgres:
+  replicaCount: 1
+
+  image:
+    repository: postgres
+    tag: "17"
+    pullPolicy: IfNotPresent
+
+  database: taskflow
+  username: taskflow
+
+  storage:
+    size: 2Gi
+    accessMode: ReadWriteOnce
+    storageClassName: standard

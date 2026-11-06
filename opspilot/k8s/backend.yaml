@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opspilot-backend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: opspilot-backend
+  template:
+    metadata:
+      labels:
+        app: opspilot-backend
+    spec:
+      containers:
+        - name: opspilot-backend
+          image: docker.io/sanadivya016/opspilot-backend
+          ports:
+          - containerPort: 8000
+          # env:                           [ used when not using configmap or secrets ]
+          # - name: MONGO_HOST
+          #   value: opspilot-mongo.opspilot.svc.cluster.local
+          # - name: MONGO_PORT
+          #   value: "27017"
+          # - name: MONGO_DATABASE
+          #   value: opspilot
+          envFrom:                     #  [ used with configmaps ]
+            - configMapRef:
+                name: opspilot-backend-config
+        
+          env:                          # [ used with secrets ]
+            - name: DEMO_API_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: opspilot-backend-secret
+                  key: DEMO_API_TOKEN
+      #     volumeMounts:
+      #         - name: app-config-volume
+      #           mountPath: /etc/opspilot-config
+      #           readOnly: true
+      # volumes:
+      #   - name: app-config-volume
+      #     configMap:
+      #       name: opspilot-backend-config
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: opspilot-backend
+spec:
+  selector:
+    app: opspilot-backend
+  ports:
+  - port: 80
+    targetPort: 8000
+

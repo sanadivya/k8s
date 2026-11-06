@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: StatefulSet
+
+metadata:
+  name: taskflow-postgres
+
+spec:
+  serviceName: taskflow-postgres
+  replicas: {{ .Values.postgres.replicaCount }}
+
+  selector:
+    matchLabels:
+      app: taskflow-postgres
+
+  template:
+    metadata:
+      labels:
+        app: taskflow-postgres
+
+    spec:
+      containers:
+        - name: postgres
+
+          image: "{{ .Values.postgres.image.repository }}:{{ .Values.postgres.image.tag }}"
+
+          imagePullPolicy: {{ .Values.postgres.image.pullPolicy }}
+
+          ports:
+            - containerPort: 5432
+
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-postgres-config
+                  key: POSTGRES_DB
+
+            - name: POSTGRES_USER
+              valueFrom:
+                configMapKeyRef:
+                  name: taskflow-postgres-config
+                  key: POSTGRES_USER
+
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: taskflow-db-secret
+                  key: DB_PASSWORD
+
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
+
+            - name: postgres-init
+              mountPath: /docker-entrypoint-initdb.d
+              
+          startupProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            periodSeconds: 5
+            failureThreshold: 30
+
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+          livenessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB"
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+
+      volumes:
+        - name: postgres-init
+          configMap:
+            name: taskflow-postgres-config
+            items:
+              - key: init.sql
+                path: init.sql
+      
+
+  volumeClaimTemplates:
+    - metadata:
+        name: postgres-data
+
+      spec:
+        accessModes:
+          - {{ .Values.postgres.storage.accessMode }}
+
+        storageClassName: {{ .Values.postgres.storage.storageClassName }}
+
+        resources:
+          requests:
+            storage: {{ .Values.postgres.storage.size }}
+
+# volumeClaimTemplates	---- Automatically creates a PVC
+# postgres-data	---- Persistent database storage
+# postgres-init	 ---- Mounts the SQL initialization script

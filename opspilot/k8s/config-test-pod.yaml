@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: config-test-pod
+  namespace: opspilot
+spec:
+  containers:
+    - name: test
+      image: busybox:1.36
+      command: ["sh", "-c", "sleep 3600"]
+      volumeMounts:
+        - name: app-config-volume
+          mountPath: /etc/opspilot-config
+          readOnly: true
+        - name: app-secret-volume
+          mountPath: /etc/opspilot-secret
+          readOnly: true
+  volumes:
+    - name: app-config-volume
+      configMap:
+        name: opspilot-backend-config
+    - name: app-secret-volume
+      secret:
+        secretName: opspilot-backend-secret

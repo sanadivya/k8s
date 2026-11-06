@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opspilot-frontend
+spec:
+  selector:
+    matchLabels:
+      app: opspilot-frontend
+  template:
+    metadata:
+      labels:
+        app: opspilot-frontend
+    spec:
+      containers:
+      - name: opspilot-frontend
+        image: docker.io/sanadivya016/opspilot-frontend
+        ports:
+        - containerPort: 3000
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: opspilot-frontend
+spec:
+  selector:
+    app: opspilot-frontend
+  ports:
+  - port: 80
+    targetPort: 80

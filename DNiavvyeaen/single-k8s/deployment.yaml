@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-dniavvyeaen-app
+  namespace: dniavvyeaen
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: dniavvyeaen
+  
+  template:
+    metadata:
+      labels:
+        app: dniavvyeaen
+    spec:
+      containers:
+        - name: my-dniavvyeaen
+          image: docker.io/sanadivya016/diavvyeaenn:latest
+          ports:
+            - containerPort: 8000
+          env:
+          - name: DB_USER
+            value: demo_user
+          - name: PORT 
+            value: "3000"

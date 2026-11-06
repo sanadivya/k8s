@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+
+metadata:
+  name: parallel-job
+
+spec:
+  completions: 10
+  parallelism: 2
+
+  template:
+    spec:
+      containers:
+        - name: processor
+          image: busybox
+          command:
+            - sh
+            - -c
+            - "echo Processing; sleep 15"
+
+      restartPolicy: Never

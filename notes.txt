@@ -1,0 +1,63 @@
+K8s components:
+  - nodes: vm or physical machine, similar to EC2(with CPU, RAM, memory, storage)
+  - pod: can have 2-3 containers (sidecar containers)
+  - Deployment: pod Template (non-persistent)
+  - Statefulset: pod Template (persistent)
+  - Service: Load Balancer
+  - Ingress: Routing
+  - ConfigMap: configuration
+  - Secret: Secret
+  - PersistenVolume: storage
+  - PersistentVolumeClaim: storage
+
+K8s Architecture:
+  - Master node
+    - API server (Simgle point of entry to a k8s cluster from an administrator point of view, get information from kubectl)
+    - Scheduler (decides what to create)
+    - Controller Manager (decides where to create [which worker node has enough resources])
+    - etcd (Stores information about the cluster [cluster brain])
+  
+  - Worker node
+    - kubelet (Connects container runtime to the node infrastructure)
+    - kube-proxy (Manages networking)
+    - Container Runtime (CRI - Container Runtime Interface)
+
+Minikube:
+  - Minikube is a tool that makes it easy to run kubernetes locally.
+  - Kind is like Minikube but with lesss features, it does not support ingress and Dashboard.
+
+Kubectl:
+  - kubectl is a command line tool for controlling k8s clusters.
+  - kubens 
+  - kubectx
+
+  - kubectl uses a context to determine which cluster and user credentials to use
+
+Create k8s dashboard using Kind:
+  - install helm. [brew install helm]
+  - helm repo add kubernetes-dashboard \
+    https://kubernetes-retired.github.io/dashboard
+
+    helm repo update
+  - install the dashboard
+    helm upgrade --install kubernetes-dashboard \
+          kubernetes-dashboard/kubernetes-dashboard \
+          --create-namespace \
+          --namespace kubernetes-dashboard
+  - Create the ServiceAccount
+    kubectl create serviceaccount dashboard-user \
+         --namespace kubernetes-dashboard
+  - Grant permissions
+    kubectl create clusterrolebinding dashboard-user-binding \
+         --clusterrole=cluster-admin \
+         --serviceaccount=kubernetes-dashboard:dashboard-user
+  - Generate the token
+    kubectl create token dashboard-user \
+          --namespace kubernetes-dashboard
+  - Expose the Dashboard to your Mac
+    kubectl -n kubernetes-dashboard port-forward \
+          svc/kubernetes-dashboard-kong-proxy 8443:443
+
+- if we delete pods, then they are recreated. But if deployments are deleted then they are gone.
+
+- kubectl port-forward svc/frontend 9000:80

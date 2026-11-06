@@ -1,0 +1,31 @@
+backend:
+  replicas: 2
+  image:
+    repository: sanadivya016/opspilot-backend
+    tag: latest
+  service:
+    port: 80
+    targetPort: 8000
+
+frontend:
+  replicas: 1
+  image:
+    repository: sanadivya016/opspilot-frontend
+    tag: latest
+  service:
+    port: 80
+    targetPort: 80
+
+mongodb:
+  replicas: 1
+  image:
+    repository: mongo
+    tag: "7"
+  service:
+    port: 27017
+  database: opspilot
+  persistence:
+    enabled: true
+    storageClass: standard
+    size: 1Gi
+    accessMode: ReadWriteOnce

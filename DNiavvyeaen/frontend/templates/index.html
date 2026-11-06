@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DNiavvyeaen</title>
+</head>
+<body>
+    <h>Hey! Great to see you mate!</h>
+    {% for name in data %}
+        <p>{{name}}</p>
+    {% endfor %}
+    # Environment Variables
+    {% for key, value in env.items() %}
+        <p>{{key}}: {{value}}</p>
+    {% endfor %}
+</body>
+<style>
+    body{
+        background-color: whitesmoke;
+        color: darkolivegreen;
+        text-align: center;
+        font-size: x-large;
+    }
+</style>
+</html>
